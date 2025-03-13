@@ -31,8 +31,6 @@ describe("Given I am connected as an employee", () => {
       const windowIcon = screen.getByTestId("icon-window");
       //to-do write expect expression
     });
-    // Ce nom de test était erroné : l'ordre demandé par le code est décroissant, mais le nom de test indiquait le contraire.
-    // De plus, le test ne vérifiait pas l'ordre des dates, mais des éléments HTML (ce qui oblige à formatter les dates pour les comparer).
     test("Then bills should be ordered from most recent to oldest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
       const dates = screen
@@ -40,7 +38,9 @@ describe("Given I am connected as an employee", () => {
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
         )
         .map((a) => a.innerHTML);
-      const antiChrono = (a, b) => (new Date(a) < new Date(b) ? 1 : -1);
+      ////// Kanban [Bug report] - Bills
+      // const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const antiChrono = (a, b) => new Date(a.date) - new Date(b.date);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
     });
