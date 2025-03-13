@@ -4,15 +4,12 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
-  // La date sera affichée formattée (lisible) si c'est possible, sinon
-  // elle sera affichée telle quelle, elle sera alors affichée en tant que date "brute".
-  const billDate = bill.formatedDate ?? bill.date;
   // "data-testid" a été ajouté pour faciliter les tests
   return `
     <tr data-testid="bill">
       <td data-testid="type">${bill.type}</td>
       <td data-testid="name">${bill.name}</td>
-      <td data-testid="date">${billDate}</td>
+      <td data-testid="date">${bill.date}</td>
       <td data-testid="amount">${bill.amount} €</td>
       <td data-testid="status">${bill.status}</td>
       <td>
@@ -25,7 +22,8 @@ const row = (bill) => {
 const rows = (data) => {
   return data && data.length
     ? data
-        .sort((a, b) => (a.date < b.date ? 1 : -1))
+        // Logique d'ordre décroissant rajoutée
+        // .sort((a, b) => (a.date < b.date ? 1 : -1))
         .map((bill) => row(bill))
         .join("")
     : "";

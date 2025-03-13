@@ -50,11 +50,14 @@ export default class Login {
     e.preventDefault();
     const user = {
       type: "Admin",
+      ////// Kanban [Bug report] - Login : ici, "employee" était utilisé au lieu d'"admin"
+      // email: e.target.querySelector("input[data-testid='employee-email-input']").value
+      // password: e.target.querySelector("input[data-testid='employee-password-input']").value
       email: e.target.querySelector(`input[data-testid="admin-email-input"]`)
-        .value, //here, "employee-email-input" was wrongly used !
+        .value,
       password: e.target.querySelector(
         `input[data-testid="admin-password-input"]`
-      ).value, //here, "employee-password-input" was wrongly used !
+      ).value,
       status: "connected",
     };
     this.localStorage.setItem("user", JSON.stringify(user));
