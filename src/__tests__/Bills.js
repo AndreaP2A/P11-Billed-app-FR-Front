@@ -87,7 +87,7 @@ describe("Given I am connected as an employee", () => {
       });
     });
     ////// Tâche 3 [Tests unitaires et d’intégration]
-    // Rendu de la modale (justificatif) en cliquant sur l'icone oeil (voir)
+    // Rendu de la modale (justificatif) en cliquant sur l'icone oeil
     describe("When I click on the eye icon of a bill", () => {
       test("It should open the modal with the bill's justification (img)", async () => {
         const onNavigate = (pathname) => {
@@ -107,6 +107,51 @@ describe("Given I am connected as an employee", () => {
           localStorage: window.localStorage,
         });
         document.body.innerHTML = BillsUI({ data: bills });
+      });
+    });
+
+    ////// Tâche 3 [Tests unitaires et d’intégration]
+    // Gestion d'erreur API (404/Not Found & 500/Server Error)
+    describe("When an error occurs on API", () => {
+      // Clean up de l'environnement de test avant de tester les erreurs
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills");
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({ type: "Employee", email: "e@e" })
+        );
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.appendChild(root);
+        router();
+      });
+      test("Then it should display a 404 error message when fetching bills", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => Promise.reject(new Error("Erreur 404")),
+          };
+        });
+
+        window.onNavigate(ROUTES_PATH.Bills);
+        await waitFor(() =>
+          expect(screen.getByText(/Erreur 404/)).toBeTruthy()
+        );
+      });
+
+      test("Then it should display a 500 error message when fetching bills", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => Promise.reject(new Error("Erreur 500")),
+          };
+        });
+
+        window.onNavigate(ROUTES_PATH.Bills);
+        await waitFor(() =>
+          expect(screen.getByText(/Erreur 500/)).toBeTruthy()
+        );
       });
     });
   });
