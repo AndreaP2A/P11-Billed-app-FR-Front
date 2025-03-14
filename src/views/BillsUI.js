@@ -4,12 +4,15 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
+  ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
+  // Utilise la date "parsée" si dispo, sinon utilise la date d'origine
+  const billParsedDate = bill.parsedDate ?? bill.date;
   // "data-testid" a été ajouté pour faciliter les tests
   return `
     <tr data-testid="bill">
       <td data-testid="type">${bill.type}</td>
       <td data-testid="name">${bill.name}</td>
-      <td data-testid="date">${bill.date}</td>
+      <td data-testid="date">${billParsedDate}</td>
       <td data-testid="amount">${bill.amount} €</td>
       <td data-testid="status">${bill.status}</td>
       <td>
@@ -20,13 +23,14 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
-  return data && data.length
-    ? data
-        // Logique d'ordre décroissant rajoutée
-        // .sort((a, b) => (a.date < b.date ? 1 : -1))
-        .map((bill) => row(bill))
-        .join("")
-    : "";
+  ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
+  // Logique d'ordre décroissant rajoutée
+  // .sort((a, b) => (a.date < b.date ? 1 : -1))
+  if (data && data.length) {
+    const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return sortedData.map((bill) => row(bill)).join("");
+  }
+  return "";
 };
 
 export default ({ data: bills, loading, error }) => {
