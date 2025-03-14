@@ -40,6 +40,20 @@ describe("Given I am connected as an employee", () => {
       // to-do write expect expression
       expect(windowIcon).toHaveClass("active-icon");
     });
+
+    ////// Tâche 3 [Tests unitaires et d’intégration]
+    // GET / Rendu de la liste des notes de frais
+    test("the bills are fetched from the (mock) API and displayed", async () => {
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.Bills);
+      await waitFor(() => screen.getByText("Mes notes de frais"));
+      const billsList = screen.getByTestId("tbody");
+      expect(billsList).toBeTruthy();
+    });
+
     test("Then bills should be ordered from most recent to oldest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
       const dates = screen
