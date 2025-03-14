@@ -13,7 +13,7 @@ import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 
-////// Tâche 3 [Tests unitaires et d’intégration]
+////// Tâche 3[Tests unitaires et d’intégration]
 // Appui sur le mock de l'API
 jest.mock("../app/store", () => mockStore);
 
@@ -36,12 +36,12 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
       await waitFor(() => screen.getByTestId("icon-window"));
       const windowIcon = screen.getByTestId("icon-window");
-      ////// Tâche 3 [Tests unitaires et d’intégration]
+      ////// Tâche 3[Tests unitaires et d’intégration]
       // to-do write expect expression
       expect(windowIcon).toHaveClass("active-icon");
     });
 
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // GET / Rendu de la liste des notes de frais
     test("the bills are fetched from the (mock) API and displayed", async () => {
       const root = document.createElement("div");
@@ -61,14 +61,12 @@ describe("Given I am connected as an employee", () => {
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
         )
         .map((a) => a.innerHTML);
-      ////// Tâche 2 [Bug report] - Bills
-      // const antiChrono = (a, b) => (a < b ? 1 : -1);
-      const antiChrono = (a, b) => new Date(a.date) - new Date(b.date);
+      const antiChrono = (a, b) => (a < b ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
     });
 
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // Rendu du formulaire d'ajout en cliquant sur "nouvelle note de frais"
     describe("When I click on the New Bill button", () => {
       test("It should open the New Bill page", async () => {
@@ -100,7 +98,7 @@ describe("Given I am connected as an employee", () => {
         expect(handleClickNewBill).toHaveBeenCalled();
       });
     });
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // Rendu de la modale (justificatif) en cliquant sur l'icone oeil
     describe("When I click on the eye icon of a bill", () => {
       test("It should open the modal with the bill's justification (img)", async () => {
@@ -124,7 +122,7 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // Gestion d'erreur API (404/Not Found & 500/Server Error)
     describe("When an error occurs on API", () => {
       // Clean up de l'environnement de test avant de tester les erreurs

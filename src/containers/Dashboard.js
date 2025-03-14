@@ -154,7 +154,7 @@ export default class {
       this.counter++;
     }
 
-    ////// Kanban [Bug hunt] - Dashboard : off("click") pour enlever tout .on("click") existant avant ajouter d'un nouveau.
+    ////// Tâche 2 [Bug hunt] - Dashboard : off("click") pour enlever tout .on("click") existant avant ajouter d'un nouveau.
     // bills.forEach(bill => { $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills)) });
     bills.forEach((bill) => {
       $(`#open-bill${bill.id}`)

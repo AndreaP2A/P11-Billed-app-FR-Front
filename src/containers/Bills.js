@@ -46,8 +46,8 @@ export default class {
               return {
                 ...doc,
                 date: doc.date,
-                ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
-                // const antiChrono = (a, b) => (a < b ? 1 : -1);
+                ////// Tâche 2 [Bug report] - Bills sorting
+                // la date est formaté pour être triée correctement (format.js)
                 parsedDate: formatDate(doc.date), // Conversion de la date to the format YYYY-MM-DD (format.js)
                 status: formatStatus(doc.status),
               };

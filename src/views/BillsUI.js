@@ -4,8 +4,8 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
-  ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
-  // Utilise la date "parsée" si dispo, sinon utilise la date d'origine
+  ////// Tâche 2 [Bug report] - Bills sorting
+  // Utilise la date "parsée" avec formatDate (Bills.js) si dispo
   const billParsedDate = bill.parsedDate ?? bill.date;
   // "data-testid" a été ajouté pour faciliter les tests
   return `
@@ -23,9 +23,8 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
-  ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
-  // Logique d'ordre décroissant rajoutée
-  // .sort((a, b) => (a.date < b.date ? 1 : -1))
+  ////// Tâche 2 [Bug report] - Bills sorting : logique d'ordre décroissant ajoutée
+  // return (data && data.length) ? data.map(bill => row(bill)).join("") : "" }
   if (data && data.length) {
     const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
     return sortedData.map((bill) => row(bill)).join("");
