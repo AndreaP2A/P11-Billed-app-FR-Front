@@ -13,7 +13,7 @@ import { ROUTES_PATH, ROUTES } from "../constants/routes.js";
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // Icone mail active
     test("Then mail icon in vertical layout should be highlighted", async () => {
       Object.defineProperty(window, "localStorage", {
@@ -30,7 +30,7 @@ describe("Given I am connected as an employee", () => {
       expect(mailIcon).toHaveClass("active-icon");
     });
 
-    ////// Tâche 3 [Tests unitaires et d’intégration]
+    ////// Tâche 3[Tests unitaires et d’intégration]
     // POST / Remplissage du formulaire, conformité du formulaire et envoi de la nouvelle note de frais
     describe("When I fill the form and submit it", () => {
       test("Then a new bill is created", async () => {

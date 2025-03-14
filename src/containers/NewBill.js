@@ -11,7 +11,7 @@ export default class NewBill {
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    ////// Kanban [Bug hunt] - Bills [1/2]: "Fichiers personnalisés (*.jpg,*.jpeg,*.png)"
+    ////// Tâche 2 [Bug hunt] - Bills [1/2]: "Fichiers personnalisés (*.jpg,*.jpeg,*.png)"
     // Restreindre l'affichage de l'explorer aux fichiers ayant une extension autorisée
     file.setAttribute("accept", ".jpg,.jpeg,.png");
     file.addEventListener("change", this.handleChangeFile);
@@ -27,7 +27,7 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
 
-    ////// Kanban [Bug hunt] - Bills [2/2]:
+    ////// Tâche 2 [Bug hunt] - Bills [2/2]:
     // Au cas où, validation de l'extension du fichier avec retour si erreur
     const fileExtension = fileName.split(".").pop().toLowerCase();
     const validExtensions = ["jpg", "jpeg", "png"];
