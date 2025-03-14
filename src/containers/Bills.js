@@ -45,7 +45,10 @@ export default class {
             try {
               return {
                 ...doc,
-                date: formatDate(doc.date),
+                date: doc.date,
+                ////// Tâche 3.b [Bug hunt & report AndreaP2A] - Bills sorting
+                // const antiChrono = (a, b) => (a < b ? 1 : -1);
+                parsedDate: formatDate(doc.date), // Conversion de la date to the format YYYY-MM-DD (format.js)
                 status: formatStatus(doc.status),
               };
             } catch (e) {
@@ -54,6 +57,7 @@ export default class {
               console.log(e, "for", doc);
               return {
                 ...doc,
+                date: doc.date,
                 status: formatStatus(doc.status),
               };
             }
