@@ -7,23 +7,25 @@ import Logout from "./Logout.js";
 
 export const filteredBills = (data, status) => {
   return data && data.length
-    ? data.filter((bill) => {
-        let selectCondition;
+    ? data
+        .filter((bill) => {
+          let selectCondition;
 
-        // in jest environment
-        if (typeof jest !== "undefined") {
-          selectCondition = bill.status === status;
-        } else {
-          /* istanbul ignore next */
-          // in prod environment
-          const userEmail = JSON.parse(localStorage.getItem("user")).email;
-          selectCondition =
-            bill.status === status &&
-            ![...USERS_TEST, userEmail].includes(bill.email);
-        }
-
-        return selectCondition;
-      })
+          // in jest environment
+          if (typeof jest !== "undefined") {
+            selectCondition = bill.status === status;
+          } else {
+            /* istanbul ignore next */
+            // in prod environment
+            const userEmail = JSON.parse(localStorage.getItem("user")).email;
+            selectCondition =
+              bill.status === status &&
+              ![...USERS_TEST, userEmail].includes(bill.email);
+          }
+          return selectCondition;
+        })
+        // Dashboard admin HR : tri des dates
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
     : [];
 };
 
