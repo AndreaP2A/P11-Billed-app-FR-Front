@@ -89,12 +89,15 @@ describe("Given I am connected as an employee", () => {
         expect(fileField.files[0].type).toBe("image/png");
 
         const handleSubmit = jest.fn(newBill.handleSubmit);
+        newBill.updateBill = jest.fn();
         const submitBtn = screen.getByTestId("form-new-bill");
 
         submitBtn.addEventListener("submit", handleSubmit);
         submitBtn.dispatchEvent(new Event("submit"));
 
         expect(handleSubmit).toHaveBeenCalled();
+        expect(newBill.updateBill).toHaveBeenCalled();
+        expect(screen.getByTestId("icon-mail")).toBeTruthy();
       });
     });
   });
