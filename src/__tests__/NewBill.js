@@ -11,10 +11,10 @@ import router from "../app/Router.js";
 import mockStore from "../__mocks__/store.js";
 import { ROUTES_PATH, ROUTES } from "../constants/routes.js";
 
+////// Tâche 3 [Tests unitaires et d’intégration]
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    ////// Tâche 3[Tests unitaires et d’intégration]
-    // Icone mail active
+    // Intégration : Navigation sur NewBill et bonne icone active/UI
     test("Then mail icon in vertical layout should be highlighted", async () => {
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
@@ -30,12 +30,12 @@ describe("Given I am connected as an employee", () => {
       expect(mailIcon).toHaveClass("active-icon");
     });
 
-    ////// Tâche 3[Tests unitaires et d’intégration]
-    // POST / Remplissage du formulaire, conformité du formulaire et envoi de la nouvelle note de frais
-    describe("When I fill the form and submit it", () => {
-      test("Then a new bill is created", async () => {
+    describe("When I fill the form", () => {
+      let newBill, bill;
+
+      beforeEach(async () => {
         document.body.innerHTML = NewBillUI();
-        const newBill = new NewBill({
+        newBill = new NewBill({
           document,
           onNavigate: (pathname) => {
             document.body.innerHTML = ROUTES({ pathname });
@@ -45,8 +45,10 @@ describe("Given I am connected as an employee", () => {
         });
 
         const bills = await mockStore.bills().list();
-        const bill = bills[0];
-
+        bill = bills[1];
+      });
+      // Unitaire : test des inputs et validation
+      test("Then the form fields are correctly filled", () => {
         const typeField = screen.getByTestId("expense-type");
         fireEvent.change(typeField, { target: { value: bill.type } });
         expect(typeField.value).toBe(bill.type);
@@ -76,28 +78,120 @@ describe("Given I am connected as an employee", () => {
           target: { value: bill.commentary },
         });
         expect(commentaryField.value).toBe(bill.commentary);
+      });
 
+      // Unitaire : test l'upload d'un fichier conforme (jpeg/png/jpg)
+      test("Then a valid file is uploaded", () => {
+        const handleChangeFile = jest.fn(newBill.handleChangeFile);
         const fileField = screen.getByTestId("file");
+
+        fileField.addEventListener("change", handleChangeFile);
+
+        // Fichier invalide
         fireEvent.change(fileField, {
           target: {
             files: [
-              new File([bill.fileName], bill.fileUrl, { type: "image/png" }),
+              new File(["file"], "file.pdf", { type: "application/pdf" }),
             ],
           },
         });
-        expect(fileField.files[0].name).toBe(bill.fileUrl);
-        expect(fileField.files[0].type).toBe("image/png");
+        expect(handleChangeFile).toHaveBeenCalled();
+        expect(fileField.value).toBe("");
 
+        // Fichier valide
+        fireEvent.change(fileField, {
+          target: {
+            files: [
+              new File([bill.fileName], bill.fileUrl, { type: "image/jpeg" }),
+            ],
+          },
+        });
+        expect(handleChangeFile).toHaveBeenCalled();
+        expect(fileField.files[0].name).toBe(bill.fileUrl);
+        expect(fileField.files[0].type).toBe("image/jpeg");
+      });
+
+      // Intégration : POST
+      test("Then the form is submitted and a new bill is created", async () => {
         const handleSubmit = jest.fn(newBill.handleSubmit);
         newBill.updateBill = jest.fn();
         const submitBtn = screen.getByTestId("form-new-bill");
 
         submitBtn.addEventListener("submit", handleSubmit);
-        submitBtn.dispatchEvent(new Event("submit"));
+
+        Object.defineProperty(window, "localStorage", {
+          value: {
+            getItem: jest
+              .fn()
+              .mockReturnValue(JSON.stringify({ email: "a@a" })),
+          },
+          writable: true,
+        });
+
+        const file = new File(["file content"], bill.fileName, {
+          type: "image/jpeg",
+        });
+        newBill.file = file;
+        newBill.fileName = bill.fileName;
+
+        fireEvent.submit(submitBtn);
 
         expect(handleSubmit).toHaveBeenCalled();
+
+        newBill.store.bills().create = jest.fn().mockResolvedValue({
+          fileUrl: bill.fileUrl,
+          key: bill.id,
+        });
+
+        const appendSpy = jest.spyOn(FormData.prototype, "append");
+
+        await newBill.handleSubmit({
+          preventDefault: jest.fn(),
+          target: {
+            querySelector: (selector) => {
+              switch (selector) {
+                case `input[data-testid="datepicker"]`:
+                  return { value: bill.date };
+                case `select[data-testid="expense-type"]`:
+                  return { value: bill.type };
+                case `input[data-testid="expense-name"]`:
+                  return { value: bill.name };
+                case `input[data-testid="amount"]`:
+                  return { value: bill.amount };
+                case `input[data-testid="vat"]`:
+                  return { value: bill.vat };
+                case `input[data-testid="pct"]`:
+                  return { value: bill.pct };
+                case `textarea[data-testid="commentary"]`:
+                  return { value: bill.commentary };
+                case `input[data-testid="file"]`:
+                  return {
+                    files: [
+                      new File([bill.fileName], bill.fileUrl, {
+                        type: "image/jpeg",
+                      }),
+                    ],
+                  };
+                default:
+                  return null;
+              }
+            },
+          },
+        });
+
         expect(newBill.updateBill).toHaveBeenCalled();
-        expect(screen.getByTestId("icon-mail")).toBeTruthy();
+
+        expect(appendSpy).toHaveBeenCalledWith("file", expect.any(File));
+        expect(appendSpy).toHaveBeenCalledWith("email", bill.email);
+
+        await waitFor(() => {
+          expect(newBill.fileUrl).toBe(bill.fileUrl);
+          expect(newBill.billId).toBe(bill.id);
+        });
+
+        await waitFor(() => {
+          expect(screen.getByTestId("icon-mail")).toBeTruthy();
+        });
       });
     });
   });

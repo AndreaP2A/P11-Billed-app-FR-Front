@@ -11,13 +11,11 @@ export default class NewBill {
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    ////// Tâche 2 [Bug hunt] - Bills [1/2]: "Fichiers personnalisés (*.jpg,*.jpeg,*.png)"
-    // Restreindre l'affichage de l'explorer aux fichiers ayant une extension autorisée
-    file.setAttribute("accept", ".jpg,.jpeg,.png");
     file.addEventListener("change", this.handleChangeFile);
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
+    this.file = null;
     new Logout({ document, localStorage, onNavigate });
   }
   handleChangeFile = (e) => {
@@ -26,46 +24,23 @@ export default class NewBill {
       .files[0];
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-
-    ////// Tâche 2 [Bug hunt] - Bills [2/2]:
-    // Au cas où, validation de l'extension du fichier avec retour si erreur
-    const fileExtension = fileName.split(".").pop().toLowerCase();
-    const validExtensions = ["jpg", "jpeg", "png"];
-    if (!validExtensions.includes(fileExtension)) {
+    ////// Tâche 2 [Bug hunt] - Bills : "Fichiers personnalisés (*.jpg,*.jpeg,*.png)"
+    const fileTypes = ["image/jpg", "image/jpeg", "image/png"];
+    if (fileTypes.includes(file.type)) {
+      this.file = file;
+      this.fileName = fileName;
+    } else {
       alert(
-        "Seuls les fichiers avec les extensions jpg, jpeg ou png sont autorisés."
+        "Seuls les fichiers avec les extensions .jpg, .jpeg ou .png sont autorisés."
       );
       this.document.querySelector(`input[data-testid="file"]`).value = "";
-      return;
+      this.file = null;
+      this.fileName = null;
     }
-
-    const formData = new FormData();
-    const email = JSON.parse(localStorage.getItem("user")).email;
-    formData.append("file", file);
-    formData.append("email", email);
-
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true,
-        },
-      })
-      .then(({ fileUrl, key }) => {
-        console.log(fileUrl);
-        this.billId = key;
-        this.fileUrl = fileUrl;
-        this.fileName = fileName;
-      })
-      .catch((error) => console.error(error));
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
@@ -85,8 +60,29 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
-    this.updateBill(bill);
-    this.onNavigate(ROUTES_PATH["Bills"]);
+    if (this.file) {
+      const formData = new FormData();
+      formData.append("file", this.file);
+      formData.append("email", email);
+
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true,
+          },
+        })
+        .then(({ fileUrl, key }) => {
+          console.log(fileUrl);
+          this.billId = key;
+          this.fileUrl = fileUrl;
+          this.updateBill(bill);
+        })
+        .catch((error) => console.error(error));
+    } else {
+      this.updateBill(bill);
+    }
   };
 
   // not need to cover this function by tests
